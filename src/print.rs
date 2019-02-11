@@ -14,6 +14,8 @@
 
 use core::fmt::{self, Write};
 
+use crate::UEFI_SYSTEM_TABLE;
+
 #[macro_export]
 macro_rules! print {
     ($($arg:tt)*) => ($crate::print::write_fmt(format_args!($($arg)*)).unwrap());
@@ -27,10 +29,10 @@ macro_rules! println {
 }
 
 pub fn write_fmt(args: fmt::Arguments) -> fmt::Result {
-    use uefi::SimpleTextOutputProtocol as Console;
+    use crate::uefi::SimpleTextOutputProtocol as Console;
     Write::write_fmt(
         unsafe {
-            &mut *(::UEFI_SYSTEM_TABLE.unwrap().get_console_out() as *const Console as *mut Console)
+            &mut *(UEFI_SYSTEM_TABLE.unwrap().get_console_out() as *const Console as *mut Console)
         },
         args,
     )

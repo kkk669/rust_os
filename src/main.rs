@@ -1,17 +1,11 @@
 #![feature(compiler_builtins_lib)]
 #![feature(const_fn)]
-#![feature(const_unique_new)]
 #![feature(lang_items)]
 #![feature(ptr_internals)]
 #![feature(try_trait)]
-#![feature(unique)]
 #![no_std]
 #![no_main]
 
-extern crate compiler_builtins;
-extern crate fixedvec;
-
-#[macro_use]
 mod print;
 mod uefi;
 
@@ -41,10 +35,8 @@ fn main() {
 #[no_mangle]
 pub extern "C" fn eh_personality() {}
 
-#[lang = "panic_fmt"]
-#[no_mangle]
-pub extern "C" fn panic_fmt(fmt: core::fmt::Arguments, file: &'static str, line: u32) -> ! {
-    println!("\n\nPANIC in {} at line {}:", file, line);
-    println!("    {}", fmt);
+#[panic_handler]
+fn panic_handler(info: &core::panic::PanicInfo) -> ! {
+    println!("\n\n{}", info);
     loop {}
 }
